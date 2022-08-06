@@ -49,6 +49,8 @@ def BuscaPedido(id: int):
         if pedido != None:
             if pedido.get('id') == id:
                 return pedido
+        else:
+            return {"Busca": "Pedido não encontrado"}
 
 @app.get("/")
 def hello_root():
@@ -78,14 +80,20 @@ async def novoPedido(pedidoObjs:Pedidos):
 @app.delete("/apagar-pedido/{id}")
 async def deletarPedido(id:int):
     pedidoDelete = BuscaPedido(id)
-    index = pedidos['pedidos'].index(pedidoDelete)
-    del pedidos['pedidos'][index]
-    AbrirSalvarArquivo(pedidos)
-    return "Error"
+    print('Retorno', pedidoDelete)
+    if pedidoDelete != None:
+        index = pedidos['pedidos'].index(pedidoDelete)
+        del pedidos['pedidos'][index]
+        AbrirSalvarArquivo(pedidos)
+        return {"Pedido Deletado":"success"}
+    else:
+        return {"Pedido Deletado": "Pedido não existe"}
 
 
 @app.get("/procurar-pedido/{id}")
 async def procuraPedido(id: int):
+    if BuscaPedido(id) == None:
+        return {"Busca": "Pedido não encontrado"}
     return BuscaPedido(id)
 
 
@@ -97,6 +105,9 @@ async def procuraTodosPedidos():
 @app.put("/alterar-pedido/{id}")
 async def alterarPedido(id: int,pedidoObjs:Pedidos):
     pedidoAlterar = BuscaPedido(id)
+    if pedidoAlterar == None:
+        return {"Busca": "Pedido não encontrado"}
+
     index = pedidos['pedidos'].index(pedidoAlterar)
     pedidoAlterado = {
         "id": pedidoAlterar['id'],
@@ -116,6 +127,9 @@ async def alterarPedido(id: int,pedidoObjs:Pedidos):
 @app.put("/estado-pedido/{id}/{estado}")
 async def estadoPedido(id: int, estado: str):
     pedidoAlterar = BuscaPedido(id)
+
+    if pedidoAlterar == None:
+        return {"Busca": "Pedido não encontrado"}
 
     estadoAtual = pedidoAlterar['estado']
     novoEstado = False

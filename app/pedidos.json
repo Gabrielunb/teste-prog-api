@@ -7,7 +7,7 @@
       "produto": "Camarão Búzios",
       "valor": 96.0,
       "entregue": true,
-      "estado": "CONFIRMED",
+      "estado": "CANCELED",
       "timestamp": "2021-05-02T19:48:09.765Z"
     },
     {
