@@ -8,7 +8,7 @@ import datetime
 # Iniciando o FastAPI
 app = FastAPI()
 
-# Criando os status dos pedidos
+# Criando os status dos pedidospip
 class StatusPedido(str, Enum):
     RECEIVED = "RECEIVED"
     CONFIRMED = "CONFIRMED"
