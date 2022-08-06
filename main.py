@@ -102,12 +102,9 @@ async def alterarPedido(id: int,pedidoObjs:Pedidos):
 
 @app.post("/estado-pedido/{id}/{estado}")
 async def estadoPedido(id: int, estado: str):
-    pedidoEstado = BuscaPedido(id)
-    MudaEstado(pedidoEstado, estado)
-    return "Ainda em desenvolvimento"
+    pedidoAlterar = BuscaPedido(id)
 
-def MudaEstado(pedido, estado):
-    estadoAtual = pedido['estado']
+    estadoAtual = pedidoAlterar['estado']
     novoEstado = False
 
     # "Pode ir CONFIRMED ou CANCELED"
@@ -133,5 +130,24 @@ def MudaEstado(pedido, estado):
                 novoEstado = StatusPedido.DELIVERED.value
             elif estado == StatusPedido.CANCELED:
                 novoEstado = StatusPedido.CANCELED.value
-    print(novoEstado)
-    return novoEstado
+
+    if novoEstado == False:
+        return {"Error ao Alterar Estado": "O pedido não pode ser alterado de " + estadoAtual + " para " + estado}
+
+
+    indexPedido = index = pedidos['pedidos'].index(pedidoAlterar)
+
+    pedidoAlterado = {
+        "id": pedidoAlterar['id'],
+        "cliente": pedidoAlterar['cliente'],
+        "produto": pedidoAlterar['produto'],
+        "valor": pedidoAlterar['valor'],
+        "entregue": pedidoAlterar['entregue'],
+        "estado": novoEstado,
+        "timestamp": pedidoAlterar['timestamp']
+    }
+    pedidos['pedidos'][index] = pedidoAlterado
+    AbrirSalvarArquivo(pedidos)
+
+    return {"Estado Alterado": pedidoAlterado}
+
