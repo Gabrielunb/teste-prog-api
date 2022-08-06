@@ -1,8 +1,10 @@
 FROM python:3.10
 
-RUN pip freeze > requirements.txt
-RUN pip  install -r requirements.txt
-WORKDIR . /app
+WORKDIR /app
+COPY ./app/pedidos.json ./app/pedidos.json
+COPY ./requirements.txt ./app/requirements.txt
+RUN pip  install -r ./app/requirements.txt
+
 EXPOSE 8000
 COPY ./app /app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

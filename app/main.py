@@ -50,6 +50,9 @@ def BuscaPedido(id: int):
             if pedido.get('id') == id:
                 return pedido
 
+@app.get("/")
+def hello_root():
+    return
 
 # Rotas
 @app.post("/novo-pedido/")
