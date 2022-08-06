@@ -55,6 +55,8 @@ def BuscaPedido(id: int):
 @app.post("/novo-pedido/")
 async def novoPedido(pedidoObjs:Pedidos):
     temp = pedidos['pedidos']
+    if pedidoObjs.valor < 0:
+        return {"Error": "Valor do pedido NEGATIVO"}
     pedidoNovo = {
         "id": GeraId(),
         "cliente": pedidoObjs.cliente,
