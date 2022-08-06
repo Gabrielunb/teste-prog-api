@@ -4,10 +4,11 @@ from enum import Enum
 import json
 import datetime
 
-#Iniciando o FastAPI
+
+# Iniciando o FastAPI
 app = FastAPI()
 
-#Criando os status dos pedidos
+# Criando os status dos pedidos
 class StatusPedido(str, Enum):
     RECEIVED = "RECEIVED"
     CONFIRMED = "CONFIRMED"
@@ -15,37 +16,42 @@ class StatusPedido(str, Enum):
     DELIVERED = "DELIVERED"
     CANCELED = "CANCELED"
 
-#Abrindo o arquivo e deixando ele na memória
-with open('pedidos.json', encoding='utf8') as json_file:
-    pedidos = json.load(json_file)
-
-
-def AbrirSalvarArquivo(pedido, filename='pedidos.json'):
-    with open(filename, 'w', encoding='utf8') as json_file:
-        json.dump(pedido, json_file, ensure_ascii=False, indent=2)
-        json_file.close()
-
-def GeraId():
-    novoId = pedidos['nextId']
-    pedidos['nextId'] = pedidos['nextId'] + 1
-    return novoId
-
+# Criando uma basemodel de pedidos
 class Pedidos(BaseModel):
         cliente: str
         produto: str
         valor: float
         entregue: bool
 
+
+# Abrindo o arquivo e deixando ele na memória
+with open('pedidos.json', encoding='utf8') as json_file:
+    pedidos = json.load(json_file)
+
+
+# Abrindo o arquivo novamente e escrevendo nele
+def AbrirSalvarArquivo(pedido, filename='pedidos.json'):
+    with open(filename, 'w', encoding='utf8') as json_file:
+        json.dump(pedido, json_file, ensure_ascii=False, indent=2)
+        json_file.close()
+
+
+# Função para gerar o próximo id
+def GeraId():
+    novoId = pedidos['nextId']
+    pedidos['nextId'] = pedidos['nextId'] + 1
+    return novoId
+
+
+# Função para buscar o pedido
 def BuscaPedido(id: int):
     for pedido in pedidos['pedidos']:
         if pedido != None:
             if pedido.get('id') == id:
                 return pedido
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
 
+# Rotas
 @app.post("/novo-pedido/")
 async def novoPedido(pedidoObjs:Pedidos):
     temp = pedidos['pedidos']
@@ -60,32 +66,33 @@ async def novoPedido(pedidoObjs:Pedidos):
     }
     temp.append(pedidoNovo)
     AbrirSalvarArquivo(pedidos)
+
     return {"Pedido Criado": pedidoNovo}
+
 
 @app.delete("/apagar-pedido/{id}")
 async def deletarPedido(id:int):
     pedidoDelete = BuscaPedido(id)
     index = pedidos['pedidos'].index(pedidoDelete)
-    print(pedidoDelete)
-    print(pedidos['pedidos'].index(pedidoDelete))
     del pedidos['pedidos'][index]
-    print(type(pedidoDelete))
     AbrirSalvarArquivo(pedidos)
     return "Error"
 
-@app.post("/procurar-pedido/{id}")
+
+@app.get("/procurar-pedido/{id}")
 async def procuraPedido(id: int):
     return BuscaPedido(id)
 
-@app.post("/procurar-pedido/")
+
+@app.get("/procurar-pedido/")
 async def procuraTodosPedidos():
     return pedidos['pedidos']
 
 
-@app.post("/alterar-pedido/{id}")
+@app.put("/alterar-pedido/{id}")
 async def alterarPedido(id: int,pedidoObjs:Pedidos):
     pedidoAlterar = BuscaPedido(id)
-    indexPedido = index = pedidos['pedidos'].index(pedidoAlterar)
+    index = pedidos['pedidos'].index(pedidoAlterar)
     pedidoAlterado = {
         "id": pedidoAlterar['id'],
         "cliente": pedidoObjs.cliente,
@@ -100,7 +107,8 @@ async def alterarPedido(id: int,pedidoObjs:Pedidos):
 
     return {"Pedidos Alterado": pedidoAlterado}
 
-@app.post("/estado-pedido/{id}/{estado}")
+
+@app.put("/estado-pedido/{id}/{estado}")
 async def estadoPedido(id: int, estado: str):
     pedidoAlterar = BuscaPedido(id)
 
@@ -132,8 +140,7 @@ async def estadoPedido(id: int, estado: str):
                 novoEstado = StatusPedido.CANCELED.value
 
     if novoEstado == False:
-        return {"Error ao Alterar Estado": "O pedido não pode ser alterado de " + estadoAtual + " para " + estado}
-
+        return {"Error": "O pedido não pode ser alterado de " + estadoAtual + " para " + estado}
 
     indexPedido = index = pedidos['pedidos'].index(pedidoAlterar)
 

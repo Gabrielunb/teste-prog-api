@@ -7,7 +7,7 @@
       "produto": "Camarão Internacional",
       "valor": 136.0,
       "entregue": true,
-      "estado": "DELIVERED",
+      "estado": "CONFIRMED",
       "timestamp": "2021-05-02T19:48:09.765Z"
     },
     {
