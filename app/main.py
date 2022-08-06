@@ -57,6 +57,7 @@ def hello_root():
     return
 
 # Rotas
+# Novo pedido
 @app.post("/novo-pedido/")
 async def novoPedido(pedidoObjs:Pedidos):
     temp = pedidos['pedidos']
@@ -77,6 +78,7 @@ async def novoPedido(pedidoObjs:Pedidos):
     return {"Pedido Criado": pedidoNovo}
 
 
+# Deletar pedido
 @app.delete("/apagar-pedido/{id}")
 async def deletarPedido(id:int):
     pedidoDelete = BuscaPedido(id)
@@ -89,7 +91,7 @@ async def deletarPedido(id:int):
     else:
         return {"Pedido Deletado": "Pedido não existe"}
 
-
+# Procuro pedido pelo id
 @app.get("/procurar-pedido/{id}")
 async def procuraPedido(id: int):
     if BuscaPedido(id) == None:
@@ -97,11 +99,12 @@ async def procuraPedido(id: int):
     return BuscaPedido(id)
 
 
+# Retorno todos os pediso
 @app.get("/procurar-pedido/")
 async def procuraTodosPedidos():
     return pedidos['pedidos']
 
-
+# Altero o pedido
 @app.put("/alterar-pedido/{id}")
 async def alterarPedido(id: int,pedidoObjs:Pedidos):
     pedidoAlterar = BuscaPedido(id)
@@ -124,6 +127,7 @@ async def alterarPedido(id: int,pedidoObjs:Pedidos):
     return {"Pedidos Alterado": pedidoAlterado}
 
 
+# Altero o estado do pedido
 @app.put("/estado-pedido/{id}/{estado}")
 async def estadoPedido(id: int, estado: str):
     pedidoAlterar = BuscaPedido(id)
@@ -157,7 +161,7 @@ async def estadoPedido(id: int, estado: str):
                 novoEstado = StatusPedido.DELIVERED.value
             elif estado == StatusPedido.CANCELED:
                 novoEstado = StatusPedido.CANCELED.value
-
+    # Verifico se pode ter mudança no estado do pedido
     if novoEstado == False:
         return {"Error": "O pedido não pode ser alterado de " + estadoAtual + " para " + estado}
 
@@ -176,4 +180,3 @@ async def estadoPedido(id: int, estado: str):
     AbrirSalvarArquivo(pedidos)
 
     return {"Estado Alterado": pedidoAlterado}
-
