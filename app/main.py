@@ -165,7 +165,7 @@ async def estadoPedido(id: int, estado: str):
     if novoEstado == False:
         return {"Error": "O pedido não pode ser alterado de " + estadoAtual + " para " + estado}
 
-    indexPedido = index = pedidos['pedidos'].index(pedidoAlterar)
+    index = pedidos['pedidos'].index(pedidoAlterar)
 
     pedidoAlterado = {
         "id": pedidoAlterar['id'],
